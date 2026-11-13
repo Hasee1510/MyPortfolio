@@ -1,188 +1,206 @@
-/* ==========================================================
-   STYLE.CSS: Aseena B portfolio
-   1. Design tokens (colours, spacing)   5. Hero
-   2. Base / reset                       6. Sections and cards
-   3. Layout helpers                     7. Contact and footer
-   4. Header / navigation                8. Animations and responsive rules
-   ========================================================== */
+/* =========================================================
+   Aseena B – Portfolio
+   Lamp ON  = light theme (default)
+   Lamp OFF = dark theme  (class "dark" on <body>)
+   ========================================================= */
 
-/* ---------- 1. DESIGN TOKENS ----------
-   Change a colour here and it updates everywhere. */
-:root {
-  --bg: #f7f9fc;
-  --surface: #ffffff;
-  --text: #0f172a;
-  --muted: #475569;
-  --line: #e2e8f0;
-  --accent: #0f766e;        /* teal */
-  --accent-soft: #e3f3f1;
-  --on-accent: #ffffff;     /* text colour on top of --accent */
-  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  --radius: 16px;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-head: "Manrope", "Inter", system-ui, sans-serif;
+:root{
+  --bg:#f2faf7; --ink:#0b2e30; --mute:#4b6a6b; --card:#ffffff; --line:#cfe5df;
+  --a:#6a4cff; --b:#ffd23f; --c:#12c2a5;
+}
+body.dark{
+  --bg:#07191b; --ink:#e8f6f2; --mute:#9bbcb8; --card:#0e2a2d; --line:#1d4448; --a:#9a85ff;
 }
 
-/* Dark theme: script.js sets data-theme="dark" on the <html> tag */
-:root[data-theme="dark"] {
-  --bg: #0b1220;
-  --surface: #111a2c;
-  --text: #e6edf7;
-  --muted: #9fb0c7;
-  --line: #22304a;
-  --accent: #2dd4bf;
-  --accent-soft: #0f2a2c;
-  --on-accent: #062a28;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+*{box-sizing:border-box}
+html{scroll-padding-top:72px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.6 "Instrument Sans",system-ui,sans-serif;transition:background .4s,color .4s}
+h1,h2,h3{font-family:"Bricolage Grotesque",Georgia,sans-serif;line-height:1.05;margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--a);outline-offset:3px}
+.skip{position:absolute;left:-999px;top:8px;z-index:100;background:var(--ink);color:var(--bg);padding:.5rem 1rem;border-radius:8px}
+.skip:focus{left:8px}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes unspin{to{transform:rotate(-360deg)}}
+
+/* ---------- Small profile photo (top right) ---------- */
+.cornerPhoto{position:fixed;top:8px;right:14px;z-index:60;width:44px;height:44px;border-radius:50%;padding:3px;
+  background:conic-gradient(var(--a),var(--c),var(--b),var(--a));animation:spin 8s linear infinite;display:block}
+.cornerPhoto img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;border:2px solid var(--bg);animation:unspin 8s linear infinite}
+
+/* ---------- Cover banner (always dark) ---------- */
+.cover
+{position:relative;height:clamp(460px,50vw,620px);
+    overflow:hidden;isolation:isolate;color:#fff;
+  background:radial-gradient(120% 90% at 72% 35%,#1b6060 0%,#0b2e30 55%,#071c1d 100%)}
+.cover::before{content:"";position:absolute;
+    inset:0;
+    background-image:radial-gradient(rgba(255,255,255,.12) 1px,transparent 1.6px);
+    background-size:26px 26px;
+  -webkit-mask-image:linear-gradient(100deg,#000 0,transparent 55%);mask-image:linear-gradient(100deg,#000 0,transparent 55%)}
+.glow{position:absolute;border-radius:40%;filter:blur(70px);opacity:.45}
+.ga{width:340px;height:340px;left:22%;top:-120px;background:#6a4cff}
+
+/* the photo fills the right side and melts into the dark banner */
+.cover-photo{position:absolute;top:0;right:0;bottom:0;width:60%;z-index:1;opacity:0;
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 38%);mask-image:linear-gradient(to right,transparent 0,#000 38%)}
+.cover-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:62% 22%;transition:filter .6s}
+.in .cover-photo{animation:photoIn 1.4s .1s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes photoIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
+body.dark .cover-photo img{filter:brightness(.55) saturate(.85)}   /* lamp off: the room goes dim */
+
+/* tagline from the poster in the photo: the one animated moment */
+.tagline{position:absolute;left:4%;top:9%;z-index:3;font:800 clamp(2.6rem,6.2vw,5.8rem)/.98 "Bricolage Grotesque",sans-serif;letter-spacing:-.03em;text-shadow:0 2px 24px rgba(0,0,0,.35)}
+.tagline span{display:inline-block;opacity:0}
+.in .tagline span{animation:word .8s cubic-bezier(.2,.8,.2,1) forwards}
+.in .tagline span:nth-of-type(1){animation-delay:.3s}
+.in .tagline span:nth-of-type(2){animation-delay:.55s}
+.in .tagline span:nth-of-type(3){animation-delay:.8s}
+.in .tagline span:nth-of-type(4){animation-delay:1.05s}
+@keyframes word{from{opacity:0;transform:translateY(.35em)}to{opacity:1;transform:none}}
+
+/* skill links: a tidy row under the tagline */
+.chips{position:absolute;left:4%;top:calc(9% + clamp(5.4rem,12.6vw,11.6rem));z-index:3;display:flex;flex-wrap:wrap;gap:.5rem;max-width:46%}
+.chip2{display:flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border-radius:99px;font:600 .85rem "Instrument Sans",sans-serif;white-space:nowrap;
+  text-decoration:none;color:#fff;background:rgba(255,255,255,.14);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.35);opacity:0;transition:background .2s}
+.chip2::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--k,#12c2a5)}
+.chip2:hover{background:rgba(255,255,255,.26)}
+.in .chip2{animation:popS .5s calc(1.5s + var(--i)*.12s) cubic-bezier(.2,.9,.3,1.4) forwards}
+@keyframes popS{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+
+/* intro card */
+.card{position:absolute;z-index:4;left:4%;bottom:7%;width:min(380px,40%);padding:1.1rem 1.3rem;border-radius:22px 22px 22px 6px;
+  background:rgba(7,28,29,.72);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.22);
+  box-shadow:0 18px 50px rgba(0,0,0,.35);opacity:0;transition:border-color .6s,box-shadow .6s}
+.in .card{animation:cardIn .8s 1.3s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes cardIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.hello{font-size:.8rem;font-weight:600;color:#9bd9cf;letter-spacing:.1em;text-transform:uppercase}
+.card b{display:block;font:700 clamp(1.4rem,2.4vw,1.8rem)/1.05 "Bricolage Grotesque",sans-serif;margin:.15rem 0 .4rem}
+.card small{display:block;font:400 clamp(.82rem,1.3vw,.95rem)/1.5 "Instrument Sans",sans-serif;color:#d6ece7;min-height:6em}
+.mini{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.7rem}
+.mini i{font-style:normal;font-size:.7rem;font-weight:600;padding:.15rem .6rem;border-radius:99px;background:#ffd23f;color:#0b2e30}
+
+/* Lamp ON: the card glows warm. Lamp OFF: a dark veil dims it. */
+.card::after{content:"";position:absolute;inset:0;border-radius:inherit;background:rgba(2,12,13,.55);opacity:0;pointer-events:none;transition:opacity .6s}
+body.dark .card::after{opacity:1}
+body:not(.dark) .card{border-color:rgba(255,210,63,.45);box-shadow:0 18px 50px rgba(0,0,0,.35),0 0 60px rgba(255,210,63,.18)}
+
+@media (max-width:1000px){.chips{display:none}}
+@media (max-width:760px){
+  .cover{height:720px}
+  .cover-photo{width:100%;bottom:auto;height:50%;
+    -webkit-mask-image:linear-gradient(to bottom,#000 60%,transparent 100%);mask-image:linear-gradient(to bottom,#000 60%,transparent 100%)}
+  .cover-photo img{object-position:64% 18%}
+  .tagline{top:47%;font-size:2.5rem}
+  .card{left:12px;right:12px;bottom:12px;width:auto}
+  .card small{min-height:5.6em}
+  .pull-hint{display:none}
 }
 
-/* ---------- 2. BASE ---------- */
-*, *::before, *::after { box-sizing: border-box; }
+/* ---------- Navigation ---------- */
+nav{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:1.2rem;min-height:60px;font-size:.95rem;
+  padding:.6rem 78px .6rem calc(clamp(1rem,5vw,4rem) + 56px);   /* left space keeps the lamp off the name */
+  background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px)}
+nav b{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem}
+nav div{display:flex;gap:1.1rem;font-weight:600;overflow-x:auto}
+nav a{text-decoration:none;white-space:nowrap}
+nav a:hover{color:var(--a)}
+nav .cornerPhoto:hover{color:inherit}
 
-html { scroll-behavior: smooth; scroll-padding-top: 80px; } /* offset for the sticky header */
+/* ---------- Sections ---------- */
+section{padding:clamp(3rem,8vw,6rem) clamp(1rem,5vw,4rem);max-width:1150px;margin:auto}
+h2{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-.02em;margin-bottom:1.4rem}
+.lead{color:var(--mute);max-width:46rem;margin:0 0 1.5rem}
 
-body {
-  margin: 0;
-  font-family: var(--font-body);
-  font-size: 1.0625rem;
-  line-height: 1.7;
-  color: var(--text);
-  background: var(--bg);
-  -webkit-font-smoothing: antialiased;
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:3rem;align-items:center;min-height:80vh}
+.hero h1{font-size:clamp(2.4rem,6vw,4.4rem);font-weight:800;letter-spacing:-.03em}
+.hero p{max-width:34rem;color:var(--mute);font-size:1.1rem}
+.btns{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.6rem}
+.btn{padding:.8rem 1.4rem;border-radius:999px;font-weight:600;text-decoration:none;border:2px solid var(--ink);transition:transform .2s;display:inline-block}
+.btn:hover{transform:translateY(-3px)}
+.btn.p{background:var(--ink);color:var(--bg)}
+
+.stage{position:relative;width:min(100%,380px);aspect-ratio:1;margin:auto;perspective:900px}
+.tilt{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .15s ease-out}
+.ring{position:absolute;inset:-14px;border-radius:46% 54% 52% 48%/50% 44% 56% 50%;
+  background:conic-gradient(from 0deg,var(--a),var(--c),var(--b),var(--a));animation:spin 8s linear infinite,morph 9s ease-in-out infinite}
+.photo{position:absolute;inset:0;border-radius:46% 54% 52% 48%/50% 44% 56% 50%;overflow:hidden;animation:morph 9s ease-in-out infinite;
+  border:6px solid var(--bg);transform:translateZ(30px)}
+.photo img{width:100%;height:100%;object-fit:cover;display:block;animation:float 6s ease-in-out infinite}
+@keyframes morph{50%{border-radius:55% 45% 42% 58%/44% 56% 48% 52%}}
+@keyframes float{50%{transform:scale(1.06) translateY(-6px)}}
+
+.stats{display:flex;flex-wrap:wrap;gap:.8rem}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:.9rem 1.2rem}
+.stat b{display:block;font:800 1.5rem "Bricolage Grotesque",sans-serif}
+.stat span{color:var(--mute);font-size:.92rem}
+
+.job{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:1.5rem 1.6rem}
+.job header{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.8rem}
+.job h3{font-size:1.5rem}
+.job header span{color:var(--mute)}
+.job ul{margin:0;padding-left:1.2rem;color:var(--mute)}
+.job li{margin:.3rem 0}
+
+.skills{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.skills h3{font-size:1.3rem;margin-bottom:.8rem}
+.tags{display:flex;flex-wrap:wrap;gap:.5rem}
+.tags i{font-style:normal;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:.25rem .9rem}
+.tags.bold i{border:2px solid var(--ink);font-weight:600}
+
+/* Projects: "article" (not "div"), so the tag boxes inside are not styled as cards */
+.proj{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.proj article{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:1.4rem}
+.proj article:nth-child(1){border-top:6px solid var(--c)}
+.proj article:nth-child(2){border-top:6px solid var(--a)}
+.proj article:nth-child(3){border-top:6px solid var(--b)}
+.proj h3{font-size:1.35rem;margin-bottom:.5rem}
+.proj p{margin:0 0 .8rem;color:var(--mute)}
+
+.line{position:relative;margin:0;padding:0 0 0 1.6rem;list-style:none;border-left:3px solid var(--line)}
+.line li{position:relative;padding:0 0 1.5rem}
+.line li::before{content:"";position:absolute;left:calc(-1.6rem - 9px);top:.35rem;width:15px;height:15px;border-radius:50%;background:var(--a);border:3px solid var(--bg)}
+.line b{font:800 1.2rem "Bricolage Grotesque",sans-serif}
+.line span{display:block;color:var(--mute)}
+
+.contact{text-align:center}
+.contact .lead{margin:0 auto 1.6rem}
+.links{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+footer{text-align:center;padding:2rem;color:var(--mute);font-size:.9rem}
+
+@media (max-width:760px){
+  .hero,.skills{grid-template-columns:1fr}
+  .hero{min-height:auto;padding-top:2rem}
+  .stage{order:-1;width:min(70%,300px)}
+  nav b{display:none}
 }
 
-h1, h2, h3 { font-family: var(--font-head); line-height: 1.15; margin: 0; }
-p { margin: 0 0 1rem; }
-a { color: var(--accent); text-underline-offset: 3px; }
-ul, ol { margin: 0; padding: 0; list-style: none; }
-img { max-width: 100%; height: auto; display: block; } /* height:auto keeps the photo proportions */
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+/* ---------- Ceiling lamp ---------- */
+#lampWrap{position:fixed;top:0;left:14px;display:flex;flex-direction:column;align-items:center;z-index:20}
+.lamp-shade{width:50px;height:20px;background:#4b5563;border-radius:30px 30px 0 0}
+.lamp-bulb{width:14px;height:10px;background:#fde047;border-radius:0 0 24px 24px;
+  box-shadow:0 6px 28px 10px rgba(253,224,71,.65);transition:background .3s,box-shadow .3s}
+body.dark .lamp-bulb{background:#6b7280;box-shadow:none}
 
-.muted { color: var(--muted); }
+.light-cone{position:absolute;top:30px;left:50%;translate:-50% 0;width:300px;height:360px;
+  clip-path:polygon(44% 0,56% 0,100% 100%,0 100%);
+  background:linear-gradient(to bottom,rgba(253,224,71,.26),rgba(253,224,71,0));
+  pointer-events:none;transition:opacity .5s}
+body.dark .light-cone,body.scrolled .light-cone{opacity:0}
 
-.skip-link {
-  position: absolute; left: 1rem; top: -4rem; z-index: 100;
-  background: var(--accent); color: var(--on-accent);
-  padding: .6rem 1rem; border-radius: 8px; transition: top .2s;
-}
-.skip-link:focus { top: 1rem; }
+#pullSwitch{position:absolute;top:20px;left:-8px;padding:0 11px;display:flex;flex-direction:column;align-items:center;
+  cursor:grab;touch-action:none;user-select:none}
+#pullSwitch:active{cursor:grabbing}
+.cord{width:2px;height:70px;background:#9ca3af}
+.knob{width:14px;height:14px;border-radius:50%;background:#d1d5db;border:2px solid #6b7280}
+#pullSwitch.pulled .cord{animation:pull .5s ease}
+@keyframes pull{0%{height:70px}30%{height:96px}100%{height:70px}}
+.pull-hint{position:absolute;left:34px;bottom:-4px;font:600 .72rem "Instrument Sans",sans-serif;color:#ffd23f;white-space:nowrap;animation:hint 1.6s ease-in-out infinite}
+@keyframes hint{50%{opacity:.35}}
 
-/* ---------- 3. LAYOUT HELPERS ---------- */
-.container { width: min(1120px, 100% - 2.5rem); margin-inline: auto; }
-.section { padding-block: clamp(3.5rem, 8vw, 6rem); }
-.section-title { font-size: clamp(1.75rem, 3.5vw, 2.4rem); margin-bottom: 1.8rem; letter-spacing: -0.02em; }
-
-/* ---------- 4. HEADER / NAVIGATION ---------- */
-.site-header {
-  position: sticky; top: 0; z-index: 50;
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
-}
-.nav { display: flex; align-items: center; justify-content: space-between; min-height: 68px; gap: 1rem; }
-.brand { font: 800 1.25rem var(--font-head); color: var(--text); text-decoration: none; letter-spacing: -0.02em; }
-
-.nav-links { display: flex; gap: 1.8rem; }
-.nav-links a { color: var(--muted); text-decoration: none; font-weight: 500; font-size: .98rem; padding: .3rem 0; border-bottom: 2px solid transparent; }
-.nav-links a:hover { color: var(--text); }
-.nav-links a.is-active { color: var(--text); border-bottom-color: var(--accent); } /* set by script.js */
-
-.nav-actions { display: flex; gap: .5rem; }
-.icon-btn {
-  display: inline-flex; align-items: center; justify-content: center; padding: 0;
-  width: 40px; height: 40px; border-radius: 10px; cursor: pointer;
-  border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 1.1rem;
-}
-.icon-btn:hover { border-color: var(--accent); }
-.nav-toggle { display: none; }
-
-/* ---------- 5. HERO ---------- */
-.hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: clamp(2rem, 6vw, 5rem); align-items: center; min-height: calc(100vh - 68px); padding-block: 3rem; }
-.eyebrow { color: var(--accent); font-weight: 600; letter-spacing: .04em; font-size: .95rem; margin-bottom: .8rem; }
-.hero h1 { font-size: clamp(2.8rem, 7vw, 4.6rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1.2rem; }
-.lead { color: var(--muted); font-size: 1.15rem; max-width: 36rem; }
-
-.btn-row { display: flex; flex-wrap: wrap; gap: .8rem; margin: 1.8rem 0 1.6rem; }
-.btn { display: inline-block; padding: .8rem 1.5rem; border-radius: 10px; font-weight: 600; text-decoration: none; border: 1.5px solid transparent; transition: transform .2s, box-shadow .2s, background .2s; }
-.btn:hover { transform: translateY(-2px); }
-.btn-primary { background: var(--accent); color: var(--on-accent); box-shadow: var(--shadow); }
-.btn-ghost { border-color: var(--line); color: var(--text); background: var(--surface); }
-.btn-ghost:hover { border-color: var(--accent); }
-
-.hero-meta { display: flex; flex-wrap: wrap; gap: .4rem 1.6rem; color: var(--muted); font-size: .95rem; }
-.hero-meta a { color: inherit; }
-
-.hero-photo { position: relative; margin: 0; max-width: 400px; justify-self: center; width: 100%; }
-.hero-photo::before { /* decorative offset frame behind the photo */
-  content: ""; position: absolute; inset: 0; transform: translate(16px, 16px);
-  border: 2px solid var(--accent); border-radius: 50%; opacity: .6;
-}
-.hero-photo img { position: relative; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; object-position: center top; border-radius: 50%; box-shadow: var(--shadow); }
-
-/* ---------- 6. SECTIONS AND CARDS ---------- */
-.about-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; align-items: start; }
-.about-grid p { color: var(--muted); }
-
-.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.stats li { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem 1.2rem; }
-.stats strong { display: block; font: 800 1.7rem var(--font-head); color: var(--accent); }
-.stats span { font-size: .9rem; color: var(--muted); line-height: 1.4; display: block; }
-
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.6rem; box-shadow: var(--shadow); }
-.card h3 { font-size: 1.2rem; margin-bottom: .6rem; }
-.card-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem 1rem; margin-bottom: 1rem; }
-.card-head p { margin: 0; }
-.date { color: var(--accent); font-weight: 600; }
-
-.checklist li { position: relative; padding-left: 1.5rem; margin-bottom: .6rem; color: var(--muted); }
-.checklist li::before { content: ""; position: absolute; left: 0; top: .7em; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-
-.skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.2rem; }
-.projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.2rem; }
-.projects-grid p { color: var(--muted); }
-
-.tags { display: flex; flex-wrap: wrap; gap: .5rem; }
-.tags li { font-size: .88rem; font-weight: 500; padding: .25rem .8rem; border-radius: 99px; background: var(--accent-soft); color: var(--accent); }
-
-.timeline { border-left: 2px solid var(--line); padding-left: 1.8rem; margin-left: .4rem; }
-.timeline li { position: relative; padding-bottom: 1.8rem; }
-.timeline li:last-child { padding-bottom: 0; }
-.timeline li::before { content: ""; position: absolute; left: calc(-1.8rem - 7px); top: .45rem; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--bg); }
-.timeline h3 { font-size: 1.15rem; }
-.timeline p { margin: .2rem 0 0; }
-
-/* ---------- 7. CONTACT AND FOOTER ---------- */
-.contact { max-width: 720px; margin-inline: auto; text-align: center; padding: clamp(1.8rem, 5vw, 3rem); }
-.contact .lead { margin-inline: auto; }
-.contact-list { display: grid; gap: .8rem; margin-top: 1.5rem; text-align: left; }
-.contact-list li { display: flex; justify-content: space-between; gap: 1rem; padding: .8rem 1rem; border: 1px solid var(--line); border-radius: 12px; flex-wrap: wrap; }
-.contact-list span { color: var(--muted); }
-.site-footer { text-align: center; padding: 2rem 1rem; color: var(--muted); font-size: .92rem; border-top: 1px solid var(--line); }
-.site-footer p { margin: 0; }
-
-/* ---------- 8. ANIMATIONS AND RESPONSIVE ---------- */
-/* Elements with .reveal start hidden; script.js adds .is-visible when they scroll into view */
-.reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
-.reveal.is-visible { opacity: 1; transform: none; }
-
-@media (max-width: 860px) {
-  .hero { grid-template-columns: 1fr; min-height: auto; }
-  .hero-photo { order: -1; max-width: 300px; }
-  .about-grid { grid-template-columns: 1fr; gap: 2rem; }
-
-  .nav-toggle { display: inline-flex; }
-  .nav-links {
-    position: absolute; top: 68px; left: 0; right: 0; flex-direction: column; gap: 0;
-    background: var(--surface); border-bottom: 1px solid var(--line);
-    padding: .5rem 1.25rem 1rem; display: none;
-  }
-  .nav-links.is-open { display: flex; }
-  .nav-links a { display: block; padding: .8rem 0; border-bottom: 1px solid var(--line); }
-}
-
-/* Respect visitors who prefer less motion */
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; transition: none; }
-  .btn { transition: none; }
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .cover-photo,.tagline span,.chip2,.card{opacity:1}
 }
