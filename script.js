@@ -52,24 +52,24 @@ clickSound.preload = "auto";
 let stopTimer, audioCtx;
 
 // Backup sound made in code, used if click.mp3 is missing or can't play
-function synthClick() {
-  try {
-    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === "suspended") audioCtx.resume();
-    const t = audioCtx.currentTime;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = "square";
-    osc.frequency.setValueAtTime(900, t);
-    osc.frequency.exponentialRampToValueAtTime(120, t + 0.05);
-    gain.gain.setValueAtTime(0.25, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start(t);
-    osc.stop(t + 0.09);
-  } catch (e) { /* silent if audio is not supported */ }
-}
+// function synthClick() {
+//   try {
+//     audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+//     if (audioCtx.state === "suspended") audioCtx.resume();
+//     const t = audioCtx.currentTime;
+//     const osc = audioCtx.createOscillator();
+//     const gain = audioCtx.createGain();
+//     osc.type = "square";
+//     osc.frequency.setValueAtTime(900, t);
+//     osc.frequency.exponentialRampToValueAtTime(120, t + 0.05);
+//     gain.gain.setValueAtTime(0.25, t);
+//     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+//     osc.connect(gain);
+//     gain.connect(audioCtx.destination);
+//     osc.start(t);
+//     osc.stop(t + 0.09);
+//   } catch (e) { /* silent if audio is not supported */ }
+// }
 
 function playClick() {
   clearTimeout(stopTimer);
