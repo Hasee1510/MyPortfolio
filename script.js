@@ -47,7 +47,7 @@ stage.addEventListener("pointerleave", () => { tilt.style.transform = ""; });
 const CLICK_START  = 0.6;    // seconds into click.mp3 where the sound starts
 const CLICK_LENGTH = 2000;   // how long to play, in milliseconds
 
-const clickSound = new Audio("click.mp3");
+const clickSound = new Audio("Click.mp3");
 clickSound.preload = "auto";
 let stopTimer, audioCtx;
 
